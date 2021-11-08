@@ -1,6 +1,9 @@
 ﻿"""
 Programme réalisé par HAMDAOUI Ahmad-Amine, 1G7.
+
+A AJOUTER : DYNAMISME DES FENËTRES AVEC LA RÉSOLUTION, SUPPORT D'ÉTAGES, SONS CUSTOM, OPTIONS AVANCÉES (couleurs interface, résolution image, police & taille, etc...)
 """
+
 
 import pygame, sys # on importe le module system afin de fermer la fenêtre sans faire crash le programme
 import data_handler
