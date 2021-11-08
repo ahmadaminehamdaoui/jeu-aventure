@@ -1,0 +1,94 @@
+[
+    {
+        "name": "entrée",
+        "description": "Vous êtes à l'entrée.",
+        "sprite": "sprites/vestibule.jpg",
+        "position": [0,0],
+        "can_go_to": ["salon", "exemple"],
+        "objects": [],
+        "conditions": []
+    },
+    {
+        "name": "salon",
+        "description": "Vous dans le salon.",
+        "sprite": "sprites/salon.jpg",
+        "position": [0,1],
+        "can_go_to": ["cuisine", "couloir", "entrée"],
+        "objects": [],
+        "conditions": []
+    },
+    {
+        "name": "cuisine",
+        "description": "Vous êtes dans la cuisine.",
+        "sprite": "sprites/cuisine.jpg",
+        "position": [-1,1],
+        "can_go_to": ["salon", "jardin"],
+        "objects": [["carte magnétique", "sprites/objects/carte-magnetique.png", [410,337]]],
+        "conditions": []
+    },
+    {
+        "name": "jardin",
+        "description": "Vous êtes dans le jardin.",
+        "sprite": "sprites/jardin.jpg",
+        "position": [-1,2],
+        "can_go_to": ["cuisine", "cabanon"],
+        "objects": [],
+        "conditions": []
+    },
+    {
+        "name": "cabanon",
+        "description": "Vous êtes dans le cabanon.",
+        "sprite": "sprites/cabanon.jpg",
+        "position": [-1,3],
+        "can_go_to": ["jardin"],
+        "objects": [
+                    ["clé dorée", "sprites/objects/cle.png", [285,370]]
+                   ],
+        "conditions": []
+    },
+    {
+        "name": "couloir",
+        "description": "Vous êtes dans le couloir.",
+        "sprite": "sprites/couloir.jpg",
+        "position": [1,1],
+        "can_go_to": ["salon", "chambre1", "chambre2", "secret"],
+        "objects": [],
+        "conditions": []
+    },
+    {
+        "name": "chambre1",
+        "description": "Vous êtes dans une des chambres.",
+        "sprite": "sprites/chambre1.jpg",
+        "position": [1,2],
+        "can_go_to": ["couloir", "salle de bain"],
+        "objects": [],
+        "conditions": []
+    },
+    {
+        "name": "chambre2",
+        "description": "Vous êtes dans une des chambres.",
+        "sprite": "sprites/chambre2.jpg",
+        "position": [1,0],
+        "can_go_to": ["couloir"],
+        "objects": [],
+        "conditions": []
+    },
+    {
+        "name": "salle de bain",
+        "description": "Vous êtes dans la salle de bain.",
+        "sprite": "sprites/salle-de-bain.jpg",
+        "position": [1,3],
+        "can_go_to": ["chambre1"],
+        "objects": [["clé argentée", "sprites/objects/cle2.png", [15,350]]],
+        "conditions": []
+    },
+    {
+        "name": "secret",
+        "description": "Vous êtes dans la salle secrète.",
+        "sprite": "sprites/secret.jpg",
+        "position": [2,1],
+        "can_go_to": ["couloir"],
+        "objects": [],
+        "conditions": [["clé dorée", "carte magnétique", "clé argentée"], ["La porte est verouillée..."], ["Incroyable! C'est rempli d'or!"]]
+    }
+] 
