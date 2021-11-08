@@ -5,10 +5,9 @@ A AJOUTER : DYNAMISME DES FENËTRES AVEC LA RÉSOLUTION, SUPPORT D'ÉTAGES, SONS
 """
 
 
-import pygame, sys # on importe le module system afin de fermer la fenêtre sans faire crash le programme
+import pygame, sys # on importe le module system afin de pouvoir fermer la fenêtre sans faire crash le programme
 import data_handler
 from classes import *
-import os
 rooms = data_handler.load()
 
 # Initalisation de pygame
@@ -113,8 +112,6 @@ font = pygame.font.SysFont('Consolas', 20)
 WIDTH, HEIGHT = pygame.display.get_surface().get_size()
 DEFAULT_DIMENSIONS = (940,540)
 CONSOLE_SECTION = (WIDTH/2-DEFAULT_DIMENSIONS[0]/2, HEIGHT)
-DEFAULT_PATH = os.path.dirname(__file__)
-print(DEFAULT_PATH)
 
 position = [0,0]
 place = None
@@ -147,7 +144,7 @@ for room in rooms:
     for obj in room.objects:
         obj[2] = [obj[2][0]+WIDTH/2-DEFAULT_DIMENSIONS[0]/2, obj[2][1]]
 
-# --------- Logique dejeu ---------#
+# --------- Logique de jeu ---------#
 while True:
     cursor_pos = pygame.mouse.get_pos() # on obtient la position de la souris
 
