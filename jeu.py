@@ -1,14 +1,21 @@
-﻿"""
+"""
 Programme réalisé par HAMDAOUI Ahmad-Amine, 1G7.
-
-A AJOUTER : DYNAMISME DES FENËTRES AVEC LA RÉSOLUTION, SUPPORT D'ÉTAGES, SONS CUSTOM, OPTIONS AVANCÉES (couleurs interface, résolution image, police & taille, etc...)
 """
 
 
 import pygame, sys # on importe le module system afin de pouvoir fermer la fenêtre sans faire crash le programme
 import data_handler
 from classes import *
-rooms = data_handler.load()
+import ctypes
+
+# on obtient les dimensions du moniteur
+user32 = ctypes.windll.user32
+screen_size = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+print(screen_size)
+
+# on récupère les données des autres fichiers
+rooms = data_handler.load_data()
+config = data_handler.load_config()
 
 # Initalisation de pygame
 pygame.init()
@@ -107,10 +114,10 @@ def move(direction):
                         win_console.write(room.description)
 
 # Variables initiales
-font = pygame.font.SysFont('Consolas', 20)
+font = pygame.font.SysFont('Consolas', config["text-size"])
 
 WIDTH, HEIGHT = pygame.display.get_surface().get_size()
-DEFAULT_DIMENSIONS = (940,540)
+DEFAULT_DIMENSIONS = (int(screen_size[0]*940/config["scale-resolution"][0]),int(screen_size[1]*540/config["scale-resolution"][1]))
 CONSOLE_SECTION = (WIDTH/2-DEFAULT_DIMENSIONS[0]/2, HEIGHT)
 
 position = [0,0]
@@ -127,22 +134,20 @@ ui_windows = [win_console, win_inventory, win_control, win_minimap]
 
 element_center = (win_control.position[0]+win_control.dimensions[0]/2, win_control.position[1]+win_control.dimensions[1]/2)
 buttons = []
-buttons.append(New_Button((element_center[0]-140, element_center[1]-60), (80,40), (255,255,255), lambda:move('q'), txt='Gauche'))
-buttons.append(New_Button((element_center[0]+40, element_center[1]-60), (80,40), (255,255,255), lambda:move('d'), txt='Droite'))
-buttons.append(New_Button((element_center[0]-50, element_center[1]-60), (80,40), (255,255,255), lambda:move('s'), txt='Bas'))
-buttons.append(New_Button((element_center[0]-50, element_center[1]-110), (80,40), (255,255,255), lambda:move('z'), txt='Haut'))
-buttons.append(New_Button((element_center[0]-140, element_center[1]+40), (260,40), (255,255,255), lambda:info(), txt='Décrire'))
-buttons.append(New_Button((element_center[0]-140, element_center[1]+90), (260,40), (255,255,255), lambda:stop(), txt='Quitter'))
+buttons.append(New_Button((element_center[0]-132, element_center[1]-60), (80,40), (255,255,255), lambda:move('q'), txt='Gauche'))
+buttons.append(New_Button((element_center[0]+48, element_center[1]-60), (80,40), (255,255,255), lambda:move('d'), txt='Droite'))
+buttons.append(New_Button((element_center[0]-42, element_center[1]-60), (80,40), (255,255,255), lambda:move('s'), txt='Bas'))
+buttons.append(New_Button((element_center[0]-42, element_center[1]-110), (80,40), (255,255,255), lambda:move('z'), txt='Haut'))
+buttons.append(New_Button((element_center[0]-132, element_center[1]+40), (260,40), (255,255,255), lambda:info(), txt='Décrire'))
+buttons.append(New_Button((element_center[0]-132, element_center[1]+90), (260,40), (255,255,255), lambda:stop(), txt='Quitter'))
 
 # Chargement des images & des positions
 for room in rooms:
     # images
     room.image = pygame.transform.scale(pygame.image.load(room.image), DEFAULT_DIMENSIONS)
     for element in room.objects:
-        element[1] = pygame.image.load(element[1])
-    # positions
-    for obj in room.objects:
-        obj[2] = [obj[2][0]+WIDTH/2-DEFAULT_DIMENSIONS[0]/2, obj[2][1]]
+        loaded_image = pygame.image.load(element[1])
+        element[1] = pygame.transform.scale(loaded_image, (int(screen_size[0]*loaded_image.get_width()/config["scale-resolution"][0]), int(screen_size[1]*loaded_image.get_height()/config["scale-resolution"][1])))
 
 # --------- Logique de jeu ---------#
 while True:
@@ -176,8 +181,9 @@ while True:
                     i.action()
                     i.color = (170,170,170)      
             for obj in place.objects: # détection du clic d'un objet
+                obj_pos = (int(CONSOLE_SECTION[0]+DEFAULT_DIMENSIONS[0]*obj[2][0]/100), int(DEFAULT_DIMENSIONS[1]*obj[2][1]/100))
                 obj_width, obj_height = (obj[1].get_width(), obj[1].get_height())
-                if cursor_pos[0] > obj[2][0] and cursor_pos[0] < obj[2][0]+obj_width and cursor_pos[1] > obj[2][1] and cursor_pos[1] < obj[2][1]+obj_height:
+                if cursor_pos[0] > obj_pos[0] and cursor_pos[0] < obj_pos[0]+obj_width and cursor_pos[1] > obj_pos[1] and cursor_pos[1] < obj_pos[1]+obj_height:
                     win_inventory.write(obj[0])
                     place.objects.remove(obj)
                     
@@ -189,20 +195,19 @@ while True:
     # JEU
     screen.blit(place.image, (WIDTH/2-DEFAULT_DIMENSIONS[0]/2, 0)) # affichage de la pièce
     for element in place.objects: # affichage des objets
-        screen.blit(element[1], (element[2][0], element[2][1]))
-    
+        screen.blit(element[1], (int(CONSOLE_SECTION[0]+DEFAULT_DIMENSIONS[0]*element[2][0]/100), int(DEFAULT_DIMENSIONS[1]*element[2][1]/100)))
     # UI
     for i in range(len(ui_windows)): # affichage des fenêtres (bordures des fenêtres)
         element = ui_windows[i]
-        pygame.draw.rect(screen, (0,0,0), pygame.Rect(element.position[0], element.position[1], element.dimensions[0], element.dimensions[1]))
-        pygame.draw.rect(screen, (255,255,255), pygame.Rect(element.position[0], element.position[1], element.dimensions[0], element.dimensions[1]),  5)
+        pygame.draw.rect(screen, config['primary-color'], pygame.Rect(element.position[0], element.position[1], element.dimensions[0], element.dimensions[1]))
+        pygame.draw.rect(screen, config['secondary-color'], pygame.Rect(element.position[0], element.position[1], element.dimensions[0], element.dimensions[1]), 5)
         
         for i in range(len(element.content)): # affichage du texte des fenêtres en contenant
             element_ = element.content[i] 
-            textsurface = font.render(element_, False, (255,255,255))
+            textsurface = font.render(element_, False, config['secondary-color'])
             screen.blit(textsurface, (element.position[0]+element.padding, element.position[1]+30+i*30+element.padding))
         
-        textsurface = font.render(f'--- {element.name.upper()} ---', False, (255,255,255)) # affichage du titre de la fenêtre
+        textsurface = font.render(f'--- {element.name.upper()} ---', False, config['secondary-color']) # affichage du titre de la fenêtre
         screen.blit(textsurface, (element.position[0]+element.padding, element.position[1]+element.padding))
 
     # affichage de la minimap
@@ -222,18 +227,17 @@ while True:
                             pygame.draw.rect(screen, (100,100,100), pygame.Rect(room_position[0]+5, room_position[1]+5, 1, 20)) 
     for room in rooms:
         room_position = (minimap_center[0]+20*room.position[0], minimap_center[1]+20*-room.position[1])
-        room_color = (255,255,255) if room == place else (100,100,100)
+        room_color = config['secondary-color'] if room == place else (config['secondary-color'][0]-155 if config['secondary-color'][0]-155>0 else 0,config['secondary-color'][1]-155 if config['secondary-color'][1]-155>0 else 0,config['secondary-color'][2]-155 if config['secondary-color'][2]-155>0 else 0)
         pygame.draw.rect(screen, room_color, pygame.Rect(room_position[0], room_position[1], 10, 10))
     
     for i in buttons: # on change la couleur des boutons s'ils sont survolés par la souris
         if not is_clicking:
             if i.is_over((cursor_pos[0], cursor_pos[1])):
-                    i.color = (220,220,220)
+                    i.color = (config['secondary-color'][0]-55 if config['secondary-color'][0]-55>0 else 0,config['secondary-color'][1]-55 if config['secondary-color'][1]-55>0 else 0, config['secondary-color'][2]-55 if config['secondary-color'][2]-55>0 else 0)
             else:
-                    i.color = (255,255,255)
+                    i.color = config['secondary-color']
 
     for i in range(len(buttons)): # affichage des boutons
         buttons[i].draw(screen)
 
     pygame.display.flip() # actualisation
-
