@@ -10,9 +10,12 @@ class Room:
         self.objects = objects
         self.conditions = conditions
 
-def load():
+def load_data():
     data = json.loads(open('data.json', 'r', encoding='utf-8').read())
     rooms = []
     for element in data:
         rooms.append(Room(element['name'], element['description'], element['sprite'], element['position'], element['can_go_to'], element['objects'], element['conditions']))
     return rooms
+
+def load_config():
+    return json.loads(open('config.json', 'r', encoding='utf-8').read())
