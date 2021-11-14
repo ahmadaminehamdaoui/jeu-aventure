@@ -1,4 +1,5 @@
-import pygame
+import pygame, data_handler
+config = data_handler.load_config()
 
 class UI_window:
     def __init__(self, name, position, dimensions, padding):
@@ -28,7 +29,7 @@ class New_Button:
             surface.blit(self.image, (self.position[0] + (self.dimension[0]/2 - self.image.get_width()/2), self.position[1] + (self.dimension[1]/2 - self.image.get_height()/2)))
 
         if self.txt != '':
-            font = pygame.font.SysFont('Consolas', 20, bold=True)
+            font = pygame.font.SysFont('Consolas', config["text-size"])
             txt = font.render(self.txt, 1, (0,0,0))
             surface.blit(txt, (self.position[0] + (self.dimension[0]/2 - txt.get_width()/2), self.position[1] + (self.dimension[1]/2 - txt.get_height()/2) + 1))
 
